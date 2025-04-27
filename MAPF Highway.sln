@@ -1,8 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAPF Highway", "MAPF Highway\MAPF Highway.csproj", "{9FBCB5C7-4F5B-464F-B9AC-F76111FBDF73}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAPF Highway Simulator", "MAPF Highway Simulator\MAPF Highway Simulator.csproj", "{9FBCB5C7-4F5B-464F-B9AC-F76111FBDF73}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameWork", "FrameWork\FrameWork.csproj", "{221BE42F-5402-4D8B-89FA-700C4EEB2562}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Planner", "Planner\Planner.csproj", "{E7C4FC17-5A6F-40FC-96BF-3144FCC4726D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +20,9 @@ Global
 		{221BE42F-5402-4D8B-89FA-700C4EEB2562}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{221BE42F-5402-4D8B-89FA-700C4EEB2562}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{221BE42F-5402-4D8B-89FA-700C4EEB2562}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7C4FC17-5A6F-40FC-96BF-3144FCC4726D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7C4FC17-5A6F-40FC-96BF-3144FCC4726D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7C4FC17-5A6F-40FC-96BF-3144FCC4726D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7C4FC17-5A6F-40FC-96BF-3144FCC4726D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
