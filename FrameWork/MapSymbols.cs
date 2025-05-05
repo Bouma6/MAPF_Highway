@@ -1,4 +1,4 @@
-namespace MAPF_Highway;
+namespace FrameWork;
 
 public enum MapSymbols
 {
