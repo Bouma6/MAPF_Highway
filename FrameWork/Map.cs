@@ -1,5 +1,5 @@
 ﻿namespace FrameWork;
 
-public class Map
+public static class Map
 {
 }
