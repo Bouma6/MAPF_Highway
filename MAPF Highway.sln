@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAPF Highway Simulator", "MAPF Highway Simulator\MAPF Highway Simulator.csproj", "{9FBCB5C7-4F5B-464F-B9AC-F76111FBDF73}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator", "Simulator\Simulator.csproj", "{9FBCB5C7-4F5B-464F-B9AC-F76111FBDF73}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameWork", "FrameWork\FrameWork.csproj", "{221BE42F-5402-4D8B-89FA-700C4EEB2562}"
 EndProject
