@@ -2,7 +2,7 @@ namespace FrameWork;
 
 public class TaskMaster
 {
-    public List<Task> Tasks { get; private set; } = new();
+    public List<RobotTask> Tasks { get; private set; } = new();
 
     public TaskMaster(string taskFileName)
     {
@@ -30,7 +30,7 @@ public class TaskMaster
                 var from = new Position(int.Parse(fromParts[0]), int.Parse(fromParts[1]));
                 var to = new Position(int.Parse(toParts[0]), int.Parse(toParts[1]));
 
-                Tasks.Add(new Task(from, to));
+                Tasks.Add(new RobotTask(from, to));
             }
 
             if (Tasks.Count != expectedCount)
