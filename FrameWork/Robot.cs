@@ -1,9 +1,9 @@
 namespace FrameWork;
 
-public class Robot(RobotId RobotId,Position Position)
+public class Robot(RobotId robotId,Position position)
 {
-    public RobotId RobotId { get;}
-    public Position Position{ get; private set ; }
+    public RobotId RobotId { get;} = robotId;
+    public Position Position { get; private set; } = position;
     public RobotTask? CurrentTask { get; private set ; }
 
     public void Move(Direction direction)
