@@ -2,7 +2,7 @@ namespace FrameWork;
 
 public class TaskMaster
 {
-    public List<RobotTask> Tasks { get; private set; } = new();
+    public List<RobotTask> Tasks { get;} = [];
 
     public TaskMaster(string taskFileName)
     {
