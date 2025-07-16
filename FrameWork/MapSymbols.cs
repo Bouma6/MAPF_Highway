@@ -5,5 +5,6 @@ public enum MapSymbols
     Obstacle,
     Free,
     Delivery,
-    Pickup
+    Pickup,
+    Robot
 }
