@@ -72,4 +72,9 @@ public class Map
     {
         _map[position.x, position.y] = newSymbol;
     }
+
+    public bool ValidPosition(Position position)
+    {
+        return this[position] != MapSymbols.Obstacle&& InBounds(position);
+    }
 }
