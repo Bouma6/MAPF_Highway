@@ -3,25 +3,25 @@ using System;
 using System.Threading.Tasks;
 public class SimulationEngine
 {
-    private readonly IPlanner _planner;
+    public readonly IPlanner Planner;
     public SimulationState State;
 
     public SimulationEngine(IPlanner planner,string mapFileName,string taskFileName,string robotFileName)
     {
-        _planner = planner;
+        Planner = planner;
         State = new SimulationState(mapFileName,taskFileName,robotFileName);
     }
 
     // Run the planner on a background thread
     public void StartPlanner()
     {
-        Task.Run(() => _planner.StartPlanning());
+        Task.Run(() => Planner.StartPlanning());
     }
 
     public void Tick()
     {
-        if (!_planner.HasNextMove()) return;
-        var plan = _planner.GetNextMove()!;
+        if (!Planner.HasNextMove()) return;
+        var plan = Planner.GetNextMove()!;
         ExecutePlan(plan);
     }
     private void ExecutePlan(Dictionary<RobotId,Direction> plan)
