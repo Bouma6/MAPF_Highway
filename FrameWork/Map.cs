@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text;
 
 namespace FrameWork;
 
@@ -59,7 +60,21 @@ public class Map
         set => _map[position.x, position.y] = value;
     }
 
-    public bool InBounds(Position position) =>
+    public override string ToString()
+    {
+        var sb = new StringBuilder();
+        for (int i = 0; i < Width; i++)
+        {
+            for (int j = 0; j < Height; j++)
+            {
+                sb.Append(_map[i, j].ToSymbol());
+            }
+            sb.AppendLine();
+        }
+        return sb.ToString();
+    }
+
+    private bool InBounds(Position position) =>
         position.x>=0 && position.x<Width &&
         position.y>=0 && position.y<Height;
 
