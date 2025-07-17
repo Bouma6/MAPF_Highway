@@ -21,6 +21,11 @@ public class SimulationRunner
             var start = DateTime.UtcNow;
             _simulationFrameWork.Tick();
             
+            
+            string mapText =_simulationFrameWork.State.Map.ToString();
+            //string mapText = "not implemented";
+            ConsoleRenderer.UpdateText(mapText);
+            
             var elapsed = DateTime.UtcNow - start;
             var delay = _interval - elapsed;
 
