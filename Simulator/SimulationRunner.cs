@@ -5,21 +5,21 @@ using FrameWork;
 public class SimulationRunner
 {
     private readonly TimeSpan _interval =TimeSpan.FromSeconds(1);
-    private readonly SimulationEngine _simulationEngine;
+    private readonly SimulationFrameWork _simulationFrameWork;
     public SimulationRunner()
     {
         Planner planner = new();
-        _simulationEngine = new SimulationEngine(planner,Config.MapName,Config.RobotName,Config.TaskName);
+        _simulationFrameWork = new SimulationFrameWork(planner,Config.MapName,Config.RobotName,Config.TaskName);
         
     }
 
     public async Task RunAsync(int steps=10)
     {
-        _simulationEngine.StartPlanner();
+        _simulationFrameWork.StartPlanner();
         for (int step = 0; step < steps; step++)
         {
             var start = DateTime.UtcNow;
-            _simulationEngine.Tick();
+            _simulationFrameWork.Tick();
             
             var elapsed = DateTime.UtcNow - start;
             var delay = _interval - elapsed;
@@ -27,10 +27,10 @@ public class SimulationRunner
             if (delay > TimeSpan.Zero)
                 await Task.Delay(delay);
             else
-                Console.WriteLine($"⚠️ Step {step} overran the interval.");
+                Console.WriteLine($"Step {step} overran the interval.");
         }
 
-        Console.WriteLine("✅ PlanScheduler completed all steps.");
+        Console.WriteLine("PlanScheduler completed all steps.");
     }
 }
     

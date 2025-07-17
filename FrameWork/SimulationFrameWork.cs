@@ -1,12 +1,12 @@
 namespace FrameWork;
 using System;
 using System.Threading.Tasks;
-public class SimulationEngine
+public class SimulationFrameWork
 {
     public readonly IPlanner Planner;
     public SimulationState State;
 
-    public SimulationEngine(IPlanner planner,string mapFileName,string taskFileName,string robotFileName)
+    public SimulationFrameWork(IPlanner planner,string mapFileName,string taskFileName,string robotFileName)
     {
         Planner = planner;
         State = new SimulationState(mapFileName,taskFileName,robotFileName);
