@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Text;
+﻿using System.Text;
 
 namespace FrameWork;
 
@@ -13,19 +12,19 @@ public class Map
     {
         try
         {
-            
             string[] lines = File.ReadAllLines(mapName);
             
             if (lines.Length == 0)
                 throw new ArgumentException("Map file is empty.");
             
-            int width = lines[0].Length;
-            int height = lines.Length;
+            var width = lines[0].Length;
+            var height = lines.Length;
             _map = new MapSymbols[width, height];
-            int y = 0;
+            var y = 0;
+            //Goes through the map file and load it into memory 
             foreach (var line in lines)
             {
-                int x = 0;
+                var x = 0;
                 if (line.Length != width)
                 {
                     throw new FormatException($"Line  does not match expected width of {width}.");
@@ -48,18 +47,20 @@ public class Map
             throw;
         }
     }
+    
+    // allows using syntax _map[x,y] and will return the map symbol that is at set coordinates
     public MapSymbols this[int x, int y]
     {
         get => _map[x,y];
         set => _map[x,y] = value;
     }
-
+    // allows using syntax _map[position] and will return the map symbol that is at set position
     public MapSymbols this[Position position]
     {
         get => _map[position.x, position.y];
         set => _map[position.x, position.y] = value;
     }
-
+    //conversion to string for easier displaying of the map 
     public override string ToString()
     {
         var sb = new StringBuilder();
@@ -87,9 +88,24 @@ public class Map
     {
         _map[position.x, position.y] = newSymbol;
     }
-
+    // Validate whether a set position is free for robot to come to
     public bool ValidPosition(Position position)
     {
         return this[position] != MapSymbols.Obstacle&& InBounds(position);
+    }
+    // To create a new copy of a map 
+    public Map(Map other)
+    {
+        int width = other.Width;
+        int height = other.Height;
+        _map = new MapSymbols[width, height];
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                _map[x, y] = other._map[x, y];
+            }
+        }
     }
 }
