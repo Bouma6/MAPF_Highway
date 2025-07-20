@@ -5,8 +5,8 @@ namespace FrameWork;
 public class Map
 {
     private readonly MapSymbols[,] _map; 
-    public int Width => _map.GetLength(0);
-    public int Height => _map.GetLength(1);
+    public int Width => _map.GetLength(1);
+    public int Height => _map.GetLength(0);
 
     public Map(string mapName)
     {
@@ -17,12 +17,12 @@ public class Map
             if (lines.Length == 0)
                 throw new ArgumentException("Map file is empty.");
             
-            var width = lines[0].Length;
-            var height = lines.Length;
-            _map = new MapSymbols[width, height];
+            var width = lines[5].Length;
+            var height = lines.Length-4;
+            _map = new MapSymbols[height, width];
             var y = 0;
             //Goes through the map file and load it into memory 
-            foreach (var line in lines)
+            foreach (var line in lines.Skip(4))
             {
                 var x = 0;
                 if (line.Length != width)
@@ -31,7 +31,7 @@ public class Map
                 }
                 foreach (var symbol in line)
                 {
-                    _map[x++, y] = '.' == symbol ? MapSymbols.Free : MapSymbols.Obstacle;
+                    _map[y,x++] = '.' == symbol ? MapSymbols.Free : MapSymbols.Obstacle;
                 }
                 y++;
             }
@@ -78,16 +78,7 @@ public class Map
     private bool InBounds(Position position) =>
         position.x>=0 && position.x<Width &&
         position.y>=0 && position.y<Height;
-
-    public void Change(int x, int y, MapSymbols newSymbol)
-    {
-        _map[x,y] = newSymbol;
-    }
-
-    public void Change(Position position, MapSymbols newSymbol)
-    {
-        _map[position.x, position.y] = newSymbol;
-    }
+    
     // Validate whether a set position is free for robot to come to
     public bool ValidPosition(Position position)
     {

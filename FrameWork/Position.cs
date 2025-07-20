@@ -1,13 +1,13 @@
 namespace FrameWork;
 
-public readonly record struct Position(int x, int y)
+public readonly record struct Position(int y, int x)
 {
     public Position Move(Direction direction) => direction switch
     {
-        Direction.Left => new Position(x - 1, y),
-        Direction.Right => new Position(x + 1, y),
-        Direction.Up => new Position(x, y - 1),
-        Direction.Down => new Position(x, y + 1),
+        Direction.Left => new Position( y, x-1),
+        Direction.Right => new Position(y, x+1),
+        Direction.Up => new Position(y-1, x),
+        Direction.Down => new Position(y+1, x),
         _ => this,
     };
 }
