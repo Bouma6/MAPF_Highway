@@ -6,4 +6,6 @@ public static class Config
     public const string MapName = FilePath + "maps/test.map.txt";
     public const string RobotName = FilePath + "agents/test.agent.txt";
     public const string TaskName = FilePath + "tasks/test.tasks.txt";
+
+    public const int Steps = 10;
 }
