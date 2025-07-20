@@ -8,39 +8,47 @@ public class TaskMaster : IEnumerable<RobotTask>
 {
     public List<RobotTask> Tasks { get; } = [];
 
-    public TaskMaster(string taskFileName)
+    public TaskMaster(string taskFileName,int height)
     {
         try
         {
             string[] lines = File.ReadAllLines(taskFileName);
-
-            if (!int.TryParse(lines[0], out int expectedCount))
-                throw new FormatException("First line must be the number of tasks.");
-
-            for (int i = 1; i < lines.Length; i++)
+            
+            for (int i = 2; i < lines.Length; i++)
             {
-                string line = lines[i];
-                string[] splitLine = line.Split(',');
+                string line = lines[i].Trim();
+                if (string.IsNullOrWhiteSpace(line)) continue;
 
+                var splitLine = line.Split(',');
                 if (splitLine.Length != 2)
-                    throw new FormatException($"Invalid format on line {i + 1}: '{line}'");
+                    throw new FormatException($"Invalid task format on line {i + 1}: '{line}'");
 
-                string[] fromParts = splitLine[0].Trim().Split(' ');
-                string[] toParts = splitLine[1].Trim().Split(' ');
+                string fromParts = splitLine[0].Trim();
+                string toParts = splitLine[1].Trim();
 
-                if (fromParts.Length != 2 || toParts.Length != 2)
-                    throw new FormatException($"Invalid coordinates on line {i + 1}: '{line}'");
+                var from = new Position(int.Parse(fromParts) / height, int.Parse(fromParts) % height);
+                var to = new Position(int.Parse(toParts) / height, int.Parse(toParts) % height);
 
-                var from = new Position(int.Parse(fromParts[0]), int.Parse(fromParts[1]));
-                var to = new Position(int.Parse(toParts[0]), int.Parse(toParts[1]));
+                Tasks.Add(new RobotTask(from, to));
+            }
+            for (int i = 2; i < lines.Length; i++)
+            {
+                string line = lines[i].Trim();
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                var splitLine = line.Split(',');
+                if (splitLine.Length != 2)
+                    throw new FormatException($"Invalid task format on line {i + 1}: '{line}'");
+
+                string fromParts = splitLine[0].Trim();
+                string toParts = splitLine[1].Trim();
+
+                var from = new Position(int.Parse(fromParts) / height, int.Parse(fromParts) % height);
+                var to = new Position(int.Parse(toParts) / height, int.Parse(toParts) % height);
 
                 Tasks.Add(new RobotTask(from, to));
             }
 
-            if (Tasks.Count != expectedCount)
-            {
-                throw new InvalidOperationException($"Expected {expectedCount} tasks, but found {Tasks.Count}.");
-            }
         }
         catch (IOException ex)
         {
