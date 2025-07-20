@@ -1,7 +1,7 @@
 namespace FrameWork;
 
-public readonly struct RobotTask(Position source, Position destination)
+public readonly struct RobotTask(Position pickup, Position destination)
 {
-    public Position Source { get;} = source;
+    public Position Pickup { get;} = pickup;
     public Position Destination { get;} = destination;
 }
