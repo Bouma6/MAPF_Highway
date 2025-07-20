@@ -13,7 +13,6 @@ public class TaskMaster : IEnumerable<RobotTask>
         try
         {
             string[] lines = File.ReadAllLines(taskFileName);
-            
             for (int i = 2; i < lines.Length; i++)
             {
                 string line = lines[i].Trim();
@@ -26,25 +25,8 @@ public class TaskMaster : IEnumerable<RobotTask>
                 string fromParts = splitLine[0].Trim();
                 string toParts = splitLine[1].Trim();
 
-                var from = new Position(int.Parse(fromParts) / height, int.Parse(fromParts) % height);
-                var to = new Position(int.Parse(toParts) / height, int.Parse(toParts) % height);
-
-                Tasks.Add(new RobotTask(from, to));
-            }
-            for (int i = 2; i < lines.Length; i++)
-            {
-                string line = lines[i].Trim();
-                if (string.IsNullOrWhiteSpace(line)) continue;
-
-                var splitLine = line.Split(',');
-                if (splitLine.Length != 2)
-                    throw new FormatException($"Invalid task format on line {i + 1}: '{line}'");
-
-                string fromParts = splitLine[0].Trim();
-                string toParts = splitLine[1].Trim();
-
-                var from = new Position(int.Parse(fromParts) / height, int.Parse(fromParts) % height);
-                var to = new Position(int.Parse(toParts) / height, int.Parse(toParts) % height);
+                var from = new Position(int.Parse(fromParts) % height, int.Parse(fromParts) / height);
+                var to = new Position(int.Parse(toParts) % height, int.Parse(toParts) / height);
 
                 Tasks.Add(new RobotTask(from, to));
             }
