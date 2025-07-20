@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using FrameWork;
 
 namespace Planner;
@@ -54,5 +55,5 @@ public abstract class BasePlanner : IPlanner
 
     protected abstract Dictionary<RobotId, Direction> ComputeNextStep(int depth);
 
-    protected virtual int MaxDepth => 10;
+    protected virtual int MaxDepth => 150;
 }
