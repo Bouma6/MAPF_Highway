@@ -10,4 +10,6 @@ public readonly record struct Position(int y, int x)
         Direction.Down => new Position(y+1, x),
         _ => this,
     };
+    
+    public override string ToString() => $"coordinates are ({x}, {y})";
 }
