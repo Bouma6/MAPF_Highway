@@ -6,11 +6,13 @@ public class SimulationRunner
 {
     private readonly TimeSpan _interval =TimeSpan.FromSeconds(1);
     private readonly SimulationFrameWork _simulationFrameWork;
+
     public SimulationRunner()
     {
-        Planner planner = new();
+        PlannerState state = new PlannerState(Config.MapName, Config.RobotName, Config.TaskName);
+        var planner = new SingleRobotAStarPlanner(state);
         _simulationFrameWork = new SimulationFrameWork(planner,Config.MapName,Config.RobotName,Config.TaskName);
-        
+
     }
 
     // each second ask for a new step from planner and update the current map that is being diplayed 
