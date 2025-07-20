@@ -9,7 +9,7 @@ public class SimulationRunner
 
     public SimulationRunner()
     {
-        PlannerState state = new PlannerState(Config.MapName, Config.TaskName, Config.RobotName);
+        PlannerState state = new PlannerState(Config.MapName, Config.TaskName, Config.RobotName,Config.Steps);
         var planner = new SingleRobotAStarPlanner(state);
         _simulationFrameWork = new SimulationFrameWork(planner,Config.MapName,Config.TaskName,Config.RobotName);
 
@@ -31,6 +31,7 @@ public class SimulationRunner
                 map[task.Destination] = MapSymbols.Destination;
                 map[task.Pickup] = MapSymbols.Pickup;
             }
+            Console.WriteLine(_simulationFrameWork.State.RobotMaster[0].Position.ToString());
 
             foreach (var robot in _simulationFrameWork.State.RobotMaster)
             {

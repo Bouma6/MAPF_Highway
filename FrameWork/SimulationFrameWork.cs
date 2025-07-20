@@ -32,9 +32,8 @@ public class SimulationFrameWork
         {
             var robot = State.RobotMaster.Robots[robotPair.Key];
             var robotPositionOld = robot.Position;
-            var robotPositionNew = robotPositionOld.Move(robotPair.Value);
-            State.Map[robotPositionOld] = MapSymbols.Free;
-            State.Map[robotPositionNew] = MapSymbols.Robot;
+            robot.Position = robotPositionOld.Move(robotPair.Value);
+
         }
     }
     //Validates whether no two robots will end up at the same position or outside the map limits

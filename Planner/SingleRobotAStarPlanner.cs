@@ -9,8 +9,8 @@ public class SingleRobotAStarPlanner : BasePlanner
 {
     private readonly PlannerState _state;
     private readonly RobotId _robotId;
-    private readonly Position _pickup;
-    private readonly Position _delivery;
+    private readonly Queue<RobotTask> _remainingTasks;
+    private RobotTask? _currentTask = null;
     private Queue<Direction> _plannedPath = new();
     private bool _goingToPickup = true;
 
@@ -18,45 +18,51 @@ public class SingleRobotAStarPlanner : BasePlanner
     {
         _state = state;
         _robotId = _state.RobotMaster.First().RobotId;
-
-        var firstTask = _state.TaskMaster.First();
-        _pickup = firstTask.Pickup;
-        _delivery = firstTask.Destination;
+        _remainingTasks = new Queue<RobotTask>(_state.TaskMaster);
+        _currentTask = _remainingTasks.Count > 0 ? _remainingTasks.Dequeue() : null;
     }
 
     protected override Dictionary<RobotId, Direction> ComputeNextStep(int depth)
     {
         var robot = _state.RobotMaster[_robotId];
 
-        // Plan next path if needed
-        if (_plannedPath.Count == 0)
+        if (_currentTask == null)
         {
-            var current = robot.Position;
-            Position target = _goingToPickup ? _pickup : _delivery;
-
-            var path = FindPath(current, target);
-            _plannedPath = new Queue<Direction>(path);
-
-            if (_plannedPath.Count == 0)
-            {
-                // No path found, wait in place
-                return new Dictionary<RobotId, Direction> { { _robotId, Direction.None } };
-            }
+            // No tasks left
+            return new Dictionary<RobotId, Direction> { { _robotId, Direction.None } };
         }
 
-        // Execute next step in plan
+        if (_plannedPath.Count == 0)
+        {
+            Position target = _goingToPickup ? _currentTask.Value.Pickup : _currentTask.Value.Destination;
+            var path = FindPath(robot.Position, target);
+            _plannedPath = new Queue<Direction>(path);
+        }
+
+        if (_plannedPath.Count == 0)
+        {
+            // At target — switch or complete task
+            if (_goingToPickup)
+            {
+                _goingToPickup = false;
+            }
+            else
+            {
+                // Task complete go to next task if any
+                _currentTask = _remainingTasks.Count > 0 ? _remainingTasks.Dequeue() : null;
+                _goingToPickup = true;
+            }
+
+            // Plan new path on next tick
+            return new Dictionary<RobotId, Direction> { { _robotId, Direction.None } };
+        }
+
+        // Make the move
         var move = _plannedPath.Dequeue();
         robot.Move(move);
 
-        var newPos = robot.Position;
-        if (_state.Map.ValidPosition(newPos))
-            _state.Map[newPos] = MapSymbols.Robot;
-
-        // Switch from pickup to delivery once at pickup
-        if (_goingToPickup && robot.Position == _pickup && _plannedPath.Count == 0)
-        {
-            _goingToPickup = false;
-        }
+        if (_state.Map.ValidPosition(robot.Position))
+            _state.Map[robot.Position] = MapSymbols.Robot;
 
         return new Dictionary<RobotId, Direction> { { _robotId, move } };
     }
