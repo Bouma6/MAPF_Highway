@@ -9,9 +9,9 @@ public class SimulationRunner
 
     public SimulationRunner()
     {
-        PlannerState state = new PlannerState(Config.MapName, Config.RobotName, Config.TaskName);
+        PlannerState state = new PlannerState(Config.MapName, Config.TaskName, Config.RobotName);
         var planner = new SingleRobotAStarPlanner(state);
-        _simulationFrameWork = new SimulationFrameWork(planner,Config.MapName,Config.RobotName,Config.TaskName);
+        _simulationFrameWork = new SimulationFrameWork(planner,Config.MapName,Config.TaskName,Config.RobotName);
 
     }
 
@@ -23,7 +23,7 @@ public class SimulationRunner
         {
             var start = DateTime.UtcNow;
             _simulationFrameWork.Tick();
-            
+            Console.WriteLine($"Step {step}");
             //add tasks and robots to the map 
             Map map = new Map(_simulationFrameWork.State.Map);
             foreach (var task in _simulationFrameWork.State.TaskMaster)

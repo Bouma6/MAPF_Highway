@@ -52,6 +52,7 @@ public static class ConsoleRenderer
 
     public static void UpdateText(string newText)
     {
+        Console.WriteLine("Updating text");
         Init();
 
         _textBlock.Text = newText;
@@ -60,6 +61,7 @@ public static class ConsoleRenderer
         {
             Window.Show();
         }
+        Console.WriteLine("Showing window");
     }
 
     public static async Task StartAvalonia()
