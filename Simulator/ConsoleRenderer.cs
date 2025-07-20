@@ -13,7 +13,12 @@ public class MapApp : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            ConsoleRenderer.Init();
             desktop.MainWindow = ConsoleRenderer.Window;
+
+            // Run simulation
+            var runner = new SimulationRunner();
+            _ = runner.RunAsync(Config.Steps);
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -27,28 +32,55 @@ public static class ConsoleRenderer
     private static bool _initialized = false;
     public static void Init()
     {
+        int mapHeight;
+        int mapWidth;
+        try
+        {
+            string[] lines = File.ReadAllLines(Config.MapName);
+            
+            if (lines.Length == 0)
+                throw new ArgumentException("Map file is empty.");
+            
+            mapWidth = lines[5].Length;
+            mapHeight = lines.Length-4;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error parsing map: {ex.Message}");
+            throw;
+        }
+        
         if (_initialized) return;
+
+        const int charWidth = 10;
+        const int charHeight = 20;
+        const int margin = 40;
 
         _textBlock = new TextBlock
         {
             Text = "Waiting for map...",
-            FontFamily = "Consolas",
-            FontSize = 14,
-            TextWrapping = Avalonia.Media.TextWrapping.Wrap,
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch
+            FontFamily = new Avalonia.Media.FontFamily("Consolas, Courier New, Monospace"),
+            FontSize = 16,
+            Foreground = Avalonia.Media.Brushes.White,
+            Background = Avalonia.Media.Brushes.Black,
+            TextWrapping = Avalonia.Media.TextWrapping.NoWrap,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Top
         };
 
         Window = new Window
         {
             Title = "ASCII Map",
-            Width = 800,
-            Height = 600,
+            Width = mapWidth * charWidth + margin,
+            Height = mapHeight * charHeight + margin,
+            Background = Avalonia.Media.Brushes.Black,
             Content = _textBlock
         };
 
         _initialized = true;
     }
+
+
 
     public static void UpdateText(string newText)
     {
