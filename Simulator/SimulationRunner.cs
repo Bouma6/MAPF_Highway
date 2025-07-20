@@ -13,6 +13,7 @@ public class SimulationRunner
         
     }
 
+    // each second ask for a new step from planner and update the current map that is being diplayed 
     public async Task RunAsync(int steps=10)
     {
         _simulationFrameWork.StartPlanner();
@@ -21,9 +22,21 @@ public class SimulationRunner
             var start = DateTime.UtcNow;
             _simulationFrameWork.Tick();
             
+            //add tasks and robots to the map 
+            Map map = new Map(_simulationFrameWork.State.Map);
+            foreach (var task in _simulationFrameWork.State.TaskMaster)
+            {
+                map[task.Destination] = MapSymbols.Destination;
+                map[task.Pickup] = MapSymbols.Pickup;
+            }
+
+            foreach (var robot in _simulationFrameWork.State.RobotMaster)
+            {
+                map[robot.Position] = MapSymbols.Robot;
+            }
             
-            string mapText =_simulationFrameWork.State.Map.ToString();
-            //string mapText = "not implemented";
+            // new map such that into the original we do not have to be adding the task and robot information
+            string mapText =map.ToString();
             ConsoleRenderer.UpdateText(mapText);
             
             var elapsed = DateTime.UtcNow - start;
