@@ -8,8 +8,8 @@ public class PlannerState
     public PlannerState(string mapName,string taskName,string robotName)
     {
         Map = new Map(mapName);
-        TaskMaster = new TaskMaster(taskName);
-        RobotMaster = new RobotMaster(robotName);
+        TaskMaster = new TaskMaster(taskName,Map.Height);
+        RobotMaster = new RobotMaster(robotName,Map.Height);
 
     }
 }
