@@ -1,8 +1,12 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+
 namespace FrameWork;
 
-public class RobotMaster
+public class RobotMaster : IEnumerable<Robot>
 {
-    public readonly Dictionary<int,Robot> Robots = new ();
+    public readonly Dictionary<int, Robot> Robots = new();
 
     public RobotMaster(string robotFileName)
     {
@@ -20,17 +24,18 @@ public class RobotMaster
 
                 if (splitLine.Length != 2)
                     throw new FormatException($"Invalid format on line {i + 1}: '{line}'");
-                
-                int robotId = i-1;
-                var robotPosition = new Position(int.Parse(splitLine[0]), int.Parse(splitLine[1]));
-                var newRobot = new Robot(robotId,robotPosition); 
 
-                Robots.Add(robotId,newRobot);
+                // Each robot gets its ID while loading it from a file starting with ID 0
+                int robotId = i - 1;
+                var robotPosition = new Position(int.Parse(splitLine[0]), int.Parse(splitLine[1]));
+                var newRobot = new Robot(robotId, robotPosition);
+
+                Robots.Add(robotId, newRobot);
             }
 
             if (Robots.Count != expectedCount)
             {
-                throw new InvalidOperationException($"Expected {expectedCount} tasks, but found {Robots.Count}.");
+                throw new InvalidOperationException($"Expected {expectedCount} robots, but found {Robots.Count}.");
             }
         }
         catch (IOException ex)
@@ -40,8 +45,15 @@ public class RobotMaster
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error parsing task file: {ex.Message}");
+            Console.WriteLine($"Error parsing robot file: {ex.Message}");
             throw;
-        }   
+        }
     }
+
+    // Indexer
+    public Robot this[int id] => Robots[id];
+
+    // Implement IEnumerable<Robot>
+    public IEnumerator<Robot> GetEnumerator() => Robots.Values.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

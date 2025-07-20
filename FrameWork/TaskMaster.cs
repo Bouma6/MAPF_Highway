@@ -1,8 +1,12 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+
 namespace FrameWork;
 
-public class TaskMaster
+public class TaskMaster : IEnumerable<RobotTask>
 {
-    public List<RobotTask> Tasks { get;} = [];
+    public List<RobotTask> Tasks { get; } = [];
 
     public TaskMaster(string taskFileName)
     {
@@ -49,4 +53,11 @@ public class TaskMaster
             throw;
         }
     }
+
+    // Indexer
+    public RobotTask this[int index] => Tasks[index];
+
+    // Implement IEnumerable<RobotTask>
+    public IEnumerator<RobotTask> GetEnumerator() => Tasks.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
