@@ -4,11 +4,11 @@ public enum MapSymbols
 {
     Obstacle,
     Free,
-    Delivery,
+    Destination,
     Pickup,
     Robot
 }
-
+// extension of the MapSymbols such that they can be converted into char to be printed out 
 public static class MapSymbolsExtensions
 {
     public static char ToSymbol(this MapSymbols symbol)
@@ -17,7 +17,7 @@ public static class MapSymbolsExtensions
         {
             MapSymbols.Obstacle => '@',
             MapSymbols.Free => '.',
-            MapSymbols.Delivery => 'D',
+            MapSymbols.Destination => 'D',
             MapSymbols.Pickup => 'P',
             MapSymbols.Robot => 'R',
             _ => ' '

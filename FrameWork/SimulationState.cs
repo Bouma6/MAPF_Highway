@@ -10,5 +10,6 @@ public class SimulationState
         Map = new Map(mapName);
         TaskMaster = new TaskMaster(taskName);
         RobotMaster = new RobotMaster(robotName);
+
     }
 }

@@ -4,6 +4,9 @@ namespace Planner;
 
 public abstract class BasePlanner : IPlanner
 {
+    /// <summary>
+    /// Base planner that takes cares of all the locks due to running on a separate thread.
+    /// </summary>
     private readonly Queue<Dictionary<RobotId, Direction>> _planQueue = new();
     private readonly object _lock = new();
     private bool _isDone = false;

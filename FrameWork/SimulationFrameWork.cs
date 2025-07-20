@@ -17,13 +17,14 @@ public class SimulationFrameWork
     {
         Task.Run(() => Planner.StartPlanning());
     }
-
+    // Call it each time you want the new set of instructions 
     public void Tick()
     {
         if (!Planner.HasNextMove()) return;
         var plan = Planner.GetNextMove()!;
         ExecutePlan(plan);
     }
+    // check is the plan is valid and if yes update the current state such that it is up to date 
     private void ExecutePlan(Dictionary<RobotId,Direction> plan)
     {
         if (!ValidatePlan(plan)) return;

@@ -1,13 +1,15 @@
 ﻿namespace MAPF_Highway;
-//Print out the game map 
 class Program
 {
     public static void Main(string[] args)
     {
-        Task.Run(() => ConsoleRenderer.StartAvalonia());
+        //Start Avalonia application that displays the current map state
+        Task.Run(ConsoleRenderer.StartAvalonia);
 
+        //Start the program with the planner 
         SimulationRunner runner = new();
-        Task.Run(() => runner.RunAsync());
+        Task.Run(() => runner.RunAsync(Config.Steps));
+        
         Console.ReadLine();
     }
 }
