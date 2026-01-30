@@ -14,11 +14,11 @@ public class Map
         {
             string[] lines = File.ReadAllLines(mapName);
             
-            if (lines.Length == 0)
-                throw new ArgumentException("Map file is empty.");
+            if (lines.Length < 5)
+                throw new ArgumentException("Map file must have at least 5 lines (header + at least 1 map row).");
             
-            var width = lines[5].Length;
-            var height = lines.Length-4;
+            var width = lines[4].Length;
+            var height = lines.Length - 4;
             _map = new MapSymbols[height, width];
             var y = 0;
             //Goes through the map file and load it into memory 
@@ -27,7 +27,7 @@ public class Map
                 var x = 0;
                 if (line.Length != width)
                 {
-                    throw new FormatException($"Line  does not match expected width of {width}.");
+                    throw new FormatException($"Line {y + 5} (map row {y + 1}) does not match expected width of {width}.");
                 }
                 foreach (var symbol in line)
                 {
@@ -51,24 +51,24 @@ public class Map
     // allows using syntax _map[x,y] and will return the map symbol that is at set coordinates
     public MapSymbols this[int x, int y]
     {
-        get => _map[x,y];
-        set => _map[x,y] = value;
+        get => _map[y, x];
+        set => _map[y, x] = value;
     }
     // allows using syntax _map[position] and will return the map symbol that is at set position
     public MapSymbols this[Position position]
     {
-        get => _map[position.x, position.y];
-        set => _map[position.x, position.y] = value;
+        get => _map[position.y, position.x];
+        set => _map[position.y, position.x] = value;
     }
     //conversion to string for easier displaying of the map 
     public override string ToString()
     {
         var sb = new StringBuilder();
-        for (int i = 0; i < Width; i++)
+        for (int y = 0; y < Height; y++)
         {
-            for (int j = 0; j < Height; j++)
+            for (int x = 0; x < Width; x++)
             {
-                sb.Append(_map[i, j].ToSymbol());
+                sb.Append(_map[y, x].ToSymbol());
             }
             sb.AppendLine();
         }
@@ -82,20 +82,20 @@ public class Map
     // Validate whether a set position is free for robot to come to
     public bool ValidPosition(Position position)
     {
-        return this[position] != MapSymbols.Obstacle&& InBounds(position);
+        return this[position] != MapSymbols.Obstacle && InBounds(position);
     }
     // To create a new copy of a map 
     public Map(Map other)
     {
         int width = other.Width;
         int height = other.Height;
-        _map = new MapSymbols[width, height];
+        _map = new MapSymbols[height, width];
 
-        for (int x = 0; x < width; x++)
+        for (int y = 0; y < height; y++)
         {
-            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
             {
-                _map[x, y] = other._map[x, y];
+                _map[y, x] = other._map[y, x];
             }
         }
     }

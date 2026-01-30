@@ -13,6 +13,10 @@ public class TaskMaster : IEnumerable<RobotTask>
         try
         {
             string[] lines = File.ReadAllLines(taskFileName);
+            
+            if (lines.Length < 3)
+                throw new FormatException("Task file must have at least 3 lines (header + at least 1 task).");
+            
             for (int i = 2; i < lines.Length; i++)
             {
                 string line = lines[i].Trim();
@@ -25,8 +29,13 @@ public class TaskMaster : IEnumerable<RobotTask>
                 string fromParts = splitLine[0].Trim();
                 string toParts = splitLine[1].Trim();
 
-                var from = new Position(int.Parse(fromParts) % height, int.Parse(fromParts) / height);
-                var to = new Position(int.Parse(toParts) % height, int.Parse(toParts) / height);
+                if (!int.TryParse(fromParts, out var fromValue))
+                    throw new FormatException($"Invalid task 'from' position on line {i + 1}: '{fromParts}'");
+                if (!int.TryParse(toParts, out var toValue))
+                    throw new FormatException($"Invalid task 'to' position on line {i + 1}: '{toParts}'");
+
+                var from = new Position(fromValue % height, fromValue / height);
+                var to = new Position(toValue % height, toValue / height);
 
                 Tasks.Add(new RobotTask(from, to));
             }

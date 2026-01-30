@@ -24,7 +24,7 @@ public class SimulationFrameWork
         var plan = Planner.GetNextMove()!;
         ExecutePlan(plan);
     }
-    // check is the plan is valid and if yes update the current state such that it is up to date 
+    // check if the plan is valid and if yes update the current state such that it is up to date 
     private void ExecutePlan(Dictionary<RobotId,Direction> plan)
     {
         if (!ValidatePlan(plan)) return;
@@ -40,6 +40,18 @@ public class SimulationFrameWork
     private bool ValidatePlan(Dictionary<RobotId, Direction> plan)
     {
         HashSet<Position> occupied = [];
+        
+        // First, add positions of robots not in the plan (they stay in place)
+        foreach (var robot in State.RobotMaster)
+        {
+            if (!plan.ContainsKey(robot.RobotId))
+            {
+                if (!occupied.Add(robot.Position))
+                    return false; // Multiple robots at same position (shouldn't happen, but validate)
+            }
+        }
+        
+        // Then, check robots that are moving
         foreach (var robotPair in plan)
         {
             var robot = State.RobotMaster.Robots[robotPair.Key];
