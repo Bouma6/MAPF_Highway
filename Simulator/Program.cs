@@ -1,9 +1,7 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using System;
-using System.Threading.Tasks;
-using Avalonia.Controls;
-using Planner;
 
 namespace MAPF_Highway;
 
@@ -19,8 +17,7 @@ class Program
         }
         else
         {
-            var runner = new SimulationRunner();
-            runner.RunAsync(Config.SimulationStepCount).GetAwaiter().GetResult();
+            SimulationRunner.RunBlocking();
         }
     }
 
