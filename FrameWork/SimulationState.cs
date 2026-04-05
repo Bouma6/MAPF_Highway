@@ -8,8 +8,8 @@ public class SimulationState
     public SimulationState(string mapName,string taskName,string robotName)
     {
         Map = new Map(mapName);
-        TaskMaster = new TaskMaster(taskName,Map.Height);
-        RobotMaster = new RobotMaster(robotName,Map.Height);
+        TaskMaster = new TaskMaster(taskName, Map.Width);
+        RobotMaster = new RobotMaster(robotName, Map.Width);
 
     }
 }

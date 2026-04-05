@@ -8,7 +8,7 @@ public class TaskMaster : IEnumerable<RobotTask>
 {
     public List<RobotTask> Tasks { get; } = [];
 
-    public TaskMaster(string taskFileName,int height)
+    public TaskMaster(string taskFileName, int mapWidth)
     {
         try
         {
@@ -34,8 +34,8 @@ public class TaskMaster : IEnumerable<RobotTask>
                 if (!int.TryParse(toParts, out var toValue))
                     throw new FormatException($"Invalid task 'to' position on line {i + 1}: '{toParts}'");
 
-                var from = new Position(fromValue % height, fromValue / height);
-                var to = new Position(toValue % height, toValue / height);
+                var from = new Position(fromValue / mapWidth, fromValue % mapWidth);
+                var to = new Position(toValue / mapWidth, toValue % mapWidth);
 
                 Tasks.Add(new RobotTask(from, to));
             }
@@ -43,13 +43,11 @@ public class TaskMaster : IEnumerable<RobotTask>
         }
         catch (IOException ex)
         {
-            Console.WriteLine($"File error: {ex.Message}");
-            throw;
+            throw new IOException($"Error reading task file '{taskFileName}'.", ex);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not IOException and not FormatException)
         {
-            Console.WriteLine($"Error parsing task file: {ex.Message}");
-            throw;
+            throw new InvalidOperationException($"Error parsing task file '{taskFileName}': {ex.Message}", ex);
         }
     }
 

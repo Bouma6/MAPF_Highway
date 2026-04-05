@@ -8,7 +8,7 @@ public class RobotMaster : IEnumerable<Robot>
 {
     public readonly Dictionary<int, Robot> Robots = new();
 
-    public RobotMaster(string robotFileName,int height)
+    public RobotMaster(string robotFileName, int mapWidth)
     {
         try
         {
@@ -27,7 +27,7 @@ public class RobotMaster : IEnumerable<Robot>
                 if (!int.TryParse(line, out var parsed))
                     throw new FormatException($"Invalid robot position format on line {i + 1}: '{line}'");
                 
-                var robotPosition = new Position(parsed % height, parsed / height);
+                var robotPosition = new Position(parsed / mapWidth, parsed % mapWidth);
                 var newRobot = new Robot(robotId, robotPosition);
 
                 Robots.Add(robotId, newRobot);
@@ -36,13 +36,11 @@ public class RobotMaster : IEnumerable<Robot>
         }
         catch (IOException ex)
         {
-            Console.WriteLine($"File error: {ex.Message}");
-            throw;
+            throw new IOException($"Error reading robot file '{robotFileName}'.", ex);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not IOException and not FormatException)
         {
-            Console.WriteLine($"Error parsing robot file: {ex.Message}");
-            throw;
+            throw new InvalidOperationException($"Error parsing robot file '{robotFileName}': {ex.Message}", ex);
         }
     }
 

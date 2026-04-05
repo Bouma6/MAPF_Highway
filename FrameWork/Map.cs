@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 
 namespace FrameWork;
 
@@ -38,13 +38,11 @@ public class Map
         }
         catch (IOException ex)
         {
-            Console.WriteLine($"File error: {ex.Message}");
-            throw;
+            throw new IOException($"Error reading map file '{mapName}'.", ex);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not IOException and not ArgumentException and not FormatException)
         {
-            Console.WriteLine($"Error parsing map: {ex.Message}");
-            throw;
+            throw new InvalidOperationException($"Error parsing map '{mapName}': {ex.Message}", ex);
         }
     }
     
@@ -82,7 +80,7 @@ public class Map
     // Validate whether a set position is free for robot to come to
     public bool ValidPosition(Position position)
     {
-        return this[position] != MapSymbols.Obstacle && InBounds(position);
+        return InBounds(position) && this[position] != MapSymbols.Obstacle;
     }
     // To create a new copy of a map 
     public Map(Map other)
