@@ -1,13 +1,9 @@
+using Planner;
 using Planner.Waypoints;
 using FrameWork;
 
 namespace WaypointTool;
 
-/// <summary>
-/// Standalone tool: load a map, place N waypoints, precompute all-pairs waypoint routing, save JSON.
-/// Usage: <c>WaypointTool &lt;map.txt&gt; &lt;waypointCount&gt; [output.json] [captureRadius] [random|kcenter]</c>
-/// The placement keyword may appear last (after optional path and capture).
-/// </summary>
 internal static class Program
 {
     private static int Main(string[] args)
@@ -15,45 +11,74 @@ internal static class Program
         if (args.Length < 2)
         {
             Console.Error.WriteLine(
-                "Usage: WaypointTool <map.txt> <waypointCount> [output.json] [captureRadius] [random|kcenter]");
-            Console.Error.WriteLine("  Precomputes Floyd–Warshall routing on the waypoint metric-closure graph.");
+                "Usage: WaypointTool <map.txt> <waypointCount> [output.json] [captureRadius] [keywords...]");
+            Console.Error.WriteLine("  Keywords: random|kcenter, neighborMax=N, bridges=K");
             return 1;
         }
 
-        string mapPath = args[0];
+        var mapPath = args[0];
         if (!File.Exists(mapPath))
         {
             Console.Error.WriteLine($"Map not found: {mapPath}");
             return 2;
         }
 
-        if (!int.TryParse(args[1], out int count) || count < 0)
+        if (!int.TryParse(args[1], out var count) || count < 0)
         {
             Console.Error.WriteLine("waypointCount must be a non-negative integer.");
             return 3;
         }
 
         var tail = args.Skip(2).ToList();
-        WaypointPlacementKind placement = WaypointPlacementKind.Random;
-        if (tail.Count > 0 && TryParsePlacementKeyword(tail[^1], out var pk))
+        var placement = WaypointPlacementKind.Random;
+        var routing = new WaypointRoutingBuildOptions();
+
+        for (var i = 0; i < tail.Count;)
         {
-            placement = pk;
-            tail.RemoveAt(tail.Count - 1);
+            var t = tail[i];
+            if (TryParsePlacementKeyword(t, out var pk))
+            {
+                placement = pk;
+                tail.RemoveAt(i);
+                continue;
+            }
+
+            if (TryParseKeyValue(t, "neighborMax", out var nm))
+            {
+                routing = routing with { NeighborMaxGridDistance = nm };
+                tail.RemoveAt(i);
+                continue;
+            }
+
+            if (TryParseKeyValue(t, "bridges", out var br))
+            {
+                routing = routing with { BridgeEdgesPerComponentPair = br };
+                tail.RemoveAt(i);
+                continue;
+            }
+
+            i++;
         }
 
-        string? outPath = tail.Count >= 1 ? tail[0] : null;
-        int capture = 2;
-        if (tail.Count >= 2 && int.TryParse(tail[1], out int cap))
+        var outPath = tail.Count >= 1 ? tail[0] : null;
+        var capture = 2;
+        if (tail.Count >= 2 && int.TryParse(tail[1], out var cap))
             capture = cap;
+
+        PlannerProgress.Log = Console.WriteLine;
+        PlannerProgress.AfterEachLine = () => Console.Out.Flush();
 
         var map = new Map(mapPath);
         var data = WaypointNavigationData.Build(
             map,
             count,
             capture,
-            WaypointPlacementStrategyFactory.Create(placement));
+            WaypointPlacementStrategyFactory.Create(placement),
+            random: null,
+            routingOptions: routing);
         Console.WriteLine(
-            $"Placed {data.Waypoints.Count} waypoints; capture radius = {data.CaptureRadius}; placement = {placement}.");
+            $"Placed {data.Waypoints.Count} waypoints; capture radius = {data.CaptureRadius}; placement = {placement}; " +
+            $"routing = sparse; neighborMax = {routing.NeighborMaxGridDistance}; bridges = {routing.BridgeEdgesPerComponentPair}.");
 
         if (!string.IsNullOrEmpty(outPath))
         {
@@ -67,6 +92,19 @@ internal static class Program
         }
 
         return 0;
+    }
+
+    private static bool TryParseKeyValue(string token, string keyPrefix, out int value)
+    {
+        value = 0;
+        var sep = token.IndexOf('=');
+        if (sep <= 0)
+            return false;
+        var key = token[..sep].Trim();
+        var val = token[(sep + 1)..].Trim();
+        if (!string.Equals(key, keyPrefix, StringComparison.OrdinalIgnoreCase))
+            return false;
+        return int.TryParse(val, out value) && value > 0;
     }
 
     private static bool TryParsePlacementKeyword(string s, out WaypointPlacementKind kind)

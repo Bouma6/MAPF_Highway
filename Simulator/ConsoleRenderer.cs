@@ -154,7 +154,7 @@ public static class ConsoleRenderer
         Init();
 
         var positionToTaskIndex = new Dictionary<Position, int>();
-        for (int i = 0; i < taskMaster.Tasks.Count; i++)
+        for (var i = 0; i < taskMaster.Tasks.Count; i++)
         {
             var task = taskMaster.Tasks[i];
             positionToTaskIndex[task.Pickup] = i;
@@ -168,7 +168,7 @@ public static class ConsoleRenderer
         _textBlock.Inlines!.Clear();
 
         var batch = new System.Text.StringBuilder(map.Width + 1);
-        Color batchColor = Colors.White;
+        var batchColor = Colors.White;
 
         void FlushBatch()
         {
@@ -177,9 +177,9 @@ public static class ConsoleRenderer
             batch.Clear();
         }
 
-        for (int y = 0; y < map.Height; y++)
+        for (var y = 0; y < map.Height; y++)
         {
-            for (int x = 0; x < map.Width; x++)
+            for (var x = 0; x < map.Width; x++)
             {
                 var position = new Position(y, x);
                 char symbol;

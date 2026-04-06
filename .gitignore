@@ -1,5 +1,17 @@
+.DS_Store
+
+# Cloned separately; see README (not part of this repo).
+/MAPF-encodings/
+
 bin/
 obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+*.DotSettings.user
+
+logs/
+**/logs/
+*.log
+
+scripts/

@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
-        <RootNamespace>TestProject2</RootNamespace>
+        <RootNamespace>MAPF_Highway.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,6 +13,7 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>
         <PackageReference Include="xunit" Version="2.9.2"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2"/>
+        <PackageReference Include="Xunit.SkippableFact" Version="1.5.23"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -22,6 +23,10 @@
     <ItemGroup>
       <ProjectReference Include="..\FrameWork\FrameWork.csproj" />
       <ProjectReference Include="..\Planner\Planner.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="Fixtures\**\*" CopyToOutputDirectory="PreserveNewest" LinkBase="Fixtures" />
     </ItemGroup>
 
 </Project>

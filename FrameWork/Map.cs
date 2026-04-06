@@ -62,9 +62,9 @@ public class Map
     public override string ToString()
     {
         var sb = new StringBuilder();
-        for (int y = 0; y < Height; y++)
+        for (var y = 0; y < Height; y++)
         {
-            for (int x = 0; x < Width; x++)
+            for (var x = 0; x < Width; x++)
             {
                 sb.Append(_map[y, x].ToSymbol());
             }
@@ -85,13 +85,13 @@ public class Map
     // To create a new copy of a map 
     public Map(Map other)
     {
-        int width = other.Width;
-        int height = other.Height;
+        var width = other.Width;
+        var height = other.Height;
         _map = new MapSymbols[height, width];
 
-        for (int y = 0; y < height; y++)
+        for (var y = 0; y < height; y++)
         {
-            for (int x = 0; x < width; x++)
+            for (var x = 0; x < width; x++)
             {
                 _map[y, x] = other._map[y, x];
             }

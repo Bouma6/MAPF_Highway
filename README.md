@@ -1,214 +1,72 @@
-# Multi Agent Path Finding Framework and simulator 
+# MAPF Highway
 
-A simulation framework for managing and planning multi-agent tasks in a 2D grid environment. Supports loading maps, robots, and tasks from files and uses a pluggable planning interface for strategy development.
+Simulation and planning stack for multi-agent path finding (MAPF) experiments: grid maps and tasks, batch planners (including waypoint-based routing and SAT-backed single-agent legs), and an optional Avalonia-based viewer.
 
----
+## Requirements
 
-## Project Structure
+- [.NET 9 SDK](https://dotnet.microsoft.com/download)
+- Optional: native **MAPF SAT bridge** for planners that call `libmapf_sat_bridge` (see below)
 
-```
-FrameWork/
-├── Direction.cs            # Enum for representing robot direction
-├── IPlanner.cs             # Interface for custom planning logic
-├── Map.cs                  # 2D grid environment
-├── MapSymbols.cs           # Enum representing map contents
-├── Position.cs             # Coordinates and movement logic
-├── Robot.cs                # Robot entity
-├── RobotId.cs              # Robot identifier
-├── RobotMaster.cs          # Loads and manages all robots
-├── RobotTask.cs            # Represents a pickup-dropoff task
-├── SimulationFrameWork.cs  # Simulation runner and validator
-├── SimulationState.cs      # Stores all runtime data
-└── TaskMaster.cs           # Loads and manages all tasks
+## Build and test
+
+```bash
+dotnet build "MAPF Highway.sln"
+dotnet test Test/Test.csproj
 ```
 
----
+Run the simulator with your working directory set so `FrameWork/Data/...` resolves (see `Simulator/Config.cs` defaults), or adjust `Config.DataRoot` / file paths.
 
-### 1. **Initialize Simulation**
+## Third-party: MAPF-encodings (SAT encodings for MAPF)
 
-In simulation, we Create a `SimulationFrameWork` with file paths for:
-- The map
-- Robot positions
-- Task list
+**`MAPF-encodings/` is not part of this Git repository.** It is a **separate project** (Jiří Švancára’s **“SAT encodings for MAPF”** work; see the banner in `MAPF-encodings/src/main.cpp`: *Created by Jiri Svancara @ MFF UK*). **We only use it** as a native dependency: the .NET code loads `libmapf_sat_bridge` and calls `mapf_sat_solve_leg` via `WaypointSatLegPathfinder`.
 
+### Pull upstream and place it so the simulator finds the bridge
 
-### 2. **Start the Planner**
+1. **Clone** the upstream repo **into your working copy**, next to `FrameWork/`, `Planner/`, and `MAPF Highway.sln`. The folder **must** be named `MAPF-encodings` so the default locator can find it:
 
-```
-simulation.StartPlanner();
-```
+   ```bash
+   cd /path/to/MAPF Highway
+   git clone https://github.com/svancaj/MAPF-encodings.git MAPF-encodings
+   ```
 
-### 3. **Step Through Simulation**
+2. **Build** the static library and the **shared bridge** (needs `make`, `g++`, and dependencies described in `MAPF-encodings/README.md`):
 
-Each tick advances robot movement based on planner output:
+   ```bash
+   cd MAPF-encodings
+   make lib
+   make bridge
+   ```
 
-```
-simulation.Tick();
-```
+   This produces `MAPF-encodings/release/libmapf_sat_bridge.dylib` (macOS) or `libmapf_sat_bridge.so` (Linux). On **macOS**, if the default build fails on bundled libs, run `bash build_native_libs_macos.sh` from `MAPF-encodings/` first (it builds CaDiCaL/PB and then you can run `make lib` / `make bridge` as needed—see comments in that script).
 
----
+3. **Discovery:** `MapfSatBridgeLocator` walks up from the process **current directory** and from the app **base directory** looking for `MAPF-encodings/release/<native library>`. Keeping the clone **beside** the solution (layout below) is enough if you run the simulator from the repo root or from `Simulator/bin/...`.
 
-##  File Formats
-File formats are the same as in the Robot League Runners 
-###  `map.txt`
-- Line 1:  `type`  type of the map 
-- Line 2:  `height` height 
-- Line 3:  `width` width 
-- Line 4 - `map`
-- Following lines : map
+   ```text
+   MAPF Highway/
+     MAPF Highway.sln
+     FrameWork/
+     Planner/
+     MAPF-encodings/
+       release/
+         libmapf_sat_bridge.dylib   # or .so / .dll after build
+   ```
 
+### Native SAT bridge overrides (optional)
 
-Represents the 2D environment:
+If the library lives elsewhere, set either:
 
-- `.` = free space  
-- Any other character = obstacle  
+- **`MAPF_SAT_BRIDGE`** to the full path of the shared library, or  
+- **`Config.MapfSatBridgeLibraryPath`** in the simulator.
 
----
+Without one of these and without `MAPF-encodings/release` as above, planners that need SAT will report the bridge as missing.
 
-###  `robots.txt`
-Defines robot starting positions:
-Agents are stored as one number 
-- x = `number`%`height` 
-- y = `number`/`height`
+## Repository layout (high level)
 
-File format
-
-- Line 1: version
-- Line 2: total number of robots
-- Following lines: `number` positions
-
-
-###  `tasks.txt`
-Defines robot tasks (pickup → destination):
-Tasks are stored as two numbers
-
-- pickup x = `number1`%`height` 
-- pickup y = `number1`/`height`
-
-- drop off x = `number2`%`height` 
-- drop off y = `number2`/`height`
-
-
-File format
-- Line 1: version
-- Line 2: total number of tasks
-- Following lines: `number1,number2`
-
-
-##  Implementing a Custom Planner
-
-Implement the `IPlanner` interface:
-
-```
-public class MyPlanner : IPlanner
-{
-    public void StartPlanning() { /* your logic */ }
-    public bool HasNextMove() => true;
-    public Dictionary<RobotId, Direction>? GetNextMove() => ...;
-    public bool IsFinished() => false;
-    public void Reset() { }
-}
-```
-
-
----
-
-##  Key Concepts
-
-- **SimulationState**: Holds the map, tasks, and robot info.
-- **Validation**: Simulation prevents collisions and out-of-bounds moves.
-- **Modular Design**: You can swap in new planners without modifying the core logic.
-
----
-
-##  Map & Robot Dynamics
-
-- Robots can move **Up, Down, Left, Right**
-- The planner returns a map of `RobotId → Direction`
-- The framework ensures:
-  - No two robots share the same target position
-  - No robot moves into an obstacle or out of bounds
-
-
-
-    
-
-#  Simulation Program for Multi-Robot Framework
-
-This project serves as a visual and execution wrapper around the core Multi Agent Path Finding Framework. It launches a simulation run and visualizes it via an ASCII-based Avalonia UI.
-
----
-##  Folder Structure
-
-```
-MAPF_Highway/
-├── Config.cs             # File paths and settings
-├── ConsoleRenderer.cs    # Avalonia-based ASCII UI
-├── SimulationRunner.cs   # Simulation control logic
-└── Program.cs            # App entry point
-```
-
----
-## Purpose
-
-- Run a simulation of multiple robots executing tasks on a grid map.
-- Display real-time updates in a desktop window using ASCII graphics.
-- Use a custom planner plugged into the core framework.
-
----
-
-
-### 1. **Entry Point**
-
-```
-// Program.cs
-static void Main(string[] args)
-```
-
-- Starts the Avalonia UI in the background
-- Launches the simulation runner asynchronously
-- Keeps console alive until user exits
-
----
-
-### 2. **Configuration**
-
-Defined in `Config.cs`:
-
-```csharp
-public static class Config
-{
-    public static readonly string MapName;
-    public static readonly string RobotName;
-    public static readonly string TaskName;
-    public const int Steps = 10;
-}
-```
-
-Update file paths and step count to control simulation input.
-
----
-
-### 3. **Simulation Execution**
-
-`SimulationRunner.cs` coordinates each step:
-
-- Initializes the framework and planner
-- Each second:
-  - Advances simulation (`Tick`)
-  - Collects map, robots, tasks
-  - Renders them using `ConsoleRenderer`
-
----
-
-### 4. **Rendering**
-
-Powered by **Avalonia UI** (`ConsoleRenderer.cs`):
-
-- A `TextBlock` updates with a fresh ASCII map each tick
-- Symbols are inserted dynamically:
-  - `.` = free space
-  - `#` = obstacle
-  - `R` = robot
-  - `P` = pickup
-  - `D` = destination
+| Path | Role |
+|------|------|
+| `FrameWork/` | Map, tasks, robots, simulation state |
+| `Planner/` | Planners, waypoint graph, SAT leg pathfinder |
+| `Simulator/` | Entry point, config, UI |
+| `WaypointTool/` | CLI to generate waypoint JSON |
+| `Test/` | Unit and integration tests |
+| `scripts/` | Optional Python helpers (see `scripts/requirements.txt`) |

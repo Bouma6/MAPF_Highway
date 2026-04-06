@@ -6,11 +6,6 @@ using System.Diagnostics;
 using System.IO;
 using Avalonia.Threading;
 
-/// <summary>
-/// Runs the shared <see cref="SimulationFrameWork"/> with any <see cref="IPlanner"/> chosen from <see cref="Config"/>.
-/// The planner runs continuously on its own background thread; the runner just ticks the simulation
-/// at the configured interval and consumes whatever moves are available.
-/// </summary>
 public class SimulationRunner
 {
     public static void RunBlocking()
@@ -89,7 +84,7 @@ public class SimulationRunner
 
     public async Task RunAsync(int? steps = null)
     {
-        int totalSteps = steps ?? Config.SimulationStepCount;
+        var totalSteps = steps ?? Config.SimulationStepCount;
         PlanningRuntime.TotalSimulationSteps = totalSteps;
         long tasksAtStart = _simulationFrameWork.Planner.CompletedTasksCount;
 
@@ -97,7 +92,7 @@ public class SimulationRunner
 
         try
         {
-            for (int step = 0; step < totalSteps; step++)
+            for (var step = 0; step < totalSteps; step++)
             {
                 PlanningSessionLogger.SetSimulationStep(step);
 
@@ -106,14 +101,14 @@ public class SimulationRunner
 
                 _simulationFrameWork.SimStep = step;
 
-                int robotCount = _simulationFrameWork.State.RobotMaster.Robots.Count;
+                var robotCount = _simulationFrameWork.State.RobotMaster.Robots.Count;
                 long delivered = _simulationFrameWork.Planner.CompletedTasksCount;
 
-                bool hasMove = _simulationFrameWork.Planner.HasNextMove();
+                var hasMove = _simulationFrameWork.Planner.HasNextMove();
 
                 if (hasMove)
                 {
-                    int moved = _simulationFrameWork.Tick();
+                    var moved = _simulationFrameWork.Tick();
                     Console.WriteLine(
                         $"Step {step + 1}/{totalSteps} | moved {moved}/{robotCount} | delivered: {delivered}");
                     PlanningSessionLogger.LogStepRobotMoves(moved, robotCount, delivered);
@@ -137,7 +132,7 @@ public class SimulationRunner
             }
 
             Console.WriteLine();
-            long tasksDone = _simulationFrameWork.Planner.CompletedTasksCount - tasksAtStart;
+            var tasksDone = _simulationFrameWork.Planner.CompletedTasksCount - tasksAtStart;
             Console.WriteLine($"Simulation finished. Completed task deliveries in this run: {tasksDone} (planner: {Config.Planner}).");
             var planningActive = _simulationFrameWork.Planner.PlanningActiveTime;
             var planningIdle = _simulationFrameWork.Planner.PlanningIdleTime;
@@ -194,11 +189,11 @@ public class SimulationRunner
         w.WriteLine($"{"Robot",-10} {"Row",-6} {"Col",-6} {"LinearIdx",-10}");
         w.WriteLine(new string('-', 34));
         var map = _simulationFrameWork.State.Map;
-        int mapWidth = map.Width;
+        var mapWidth = map.Width;
         foreach (var kv in _simulationFrameWork.State.RobotMaster.Robots.OrderBy(k => k.Key))
         {
             var pos = kv.Value.Position;
-            int linearIdx = pos.y * mapWidth + pos.x;
+            var linearIdx = pos.y * mapWidth + pos.x;
             w.WriteLine($"R{kv.Key,-9} {pos.y,-6} {pos.x,-6} {linearIdx,-10}");
         }
 

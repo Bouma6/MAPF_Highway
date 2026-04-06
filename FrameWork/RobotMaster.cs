@@ -17,9 +17,9 @@ public class RobotMaster : IEnumerable<Robot>
             if (lines.Length < 3)
                 throw new FormatException("Robot file must have at least 3 lines (header + at least 1 robot).");
 
-            for (int i = 2; i < lines.Length; i++)
+            for (var i = 2; i < lines.Length; i++)
             {
-                string line = lines[i].Trim();
+                var line = lines[i].Trim();
                 if (string.IsNullOrWhiteSpace(line)) continue;
 
                 // Each robot gets its ID while loading it from a file starting with ID 0

@@ -17,17 +17,17 @@ public class TaskMaster : IEnumerable<RobotTask>
             if (lines.Length < 3)
                 throw new FormatException("Task file must have at least 3 lines (header + at least 1 task).");
             
-            for (int i = 2; i < lines.Length; i++)
+            for (var i = 2; i < lines.Length; i++)
             {
-                string line = lines[i].Trim();
+                var line = lines[i].Trim();
                 if (string.IsNullOrWhiteSpace(line)) continue;
 
                 var splitLine = line.Split(',');
                 if (splitLine.Length != 2)
                     throw new FormatException($"Invalid task format on line {i + 1}: '{line}'");
 
-                string fromParts = splitLine[0].Trim();
-                string toParts = splitLine[1].Trim();
+                var fromParts = splitLine[0].Trim();
+                var toParts = splitLine[1].Trim();
 
                 if (!int.TryParse(fromParts, out var fromValue))
                     throw new FormatException($"Invalid task 'from' position on line {i + 1}: '{fromParts}'");
